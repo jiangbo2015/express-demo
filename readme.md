@@ -14,6 +14,6 @@
 
 ### 两种认证方式 session/jwt
 
-`config.js`默认设置authentication为jwt, 更换为session，则切换为session验证
+`config.js`默认设置`authentication`为`jwt`, 更换为`session`，则切换为session验证
 
 > session验证模式下，session拦截器在router/index.js里面
