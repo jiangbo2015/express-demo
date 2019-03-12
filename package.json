@@ -1,0 +1,25 @@
+{
+  "name": "mongo-demo",
+  "version": "1.0.0",
+  "description": "",
+  "main": "es5/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "babel": "babel src/ -d es5",
+    "start": "nodemon src/index.js --exec babel-node"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "cookie-parser": "^1.4.4",
+    "cors": "^2.8.5",
+    "express": "^4.16.4",
+    "express-jwt": "^5.3.1",
+    "jsonwebtoken": "^8.5.0",
+    "mongoose": "^5.4.18",
+    "morgan": "^1.9.1",
+    "multer": "^1.4.1"
+  }
+}
