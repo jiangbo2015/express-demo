@@ -4,6 +4,7 @@ import logger from "morgan"
 import bodyParser from "body-parser"
 import cookieParser from "cookie-parser"
 import expressJwt from "express-jwt"
+import session from "express-session"
 
 import routes from "./router"
 import config from "./config"
@@ -30,25 +31,44 @@ app.use(cookieParser())
  */
 app.use(express.static("upload"))
 
-// express-jwt是用来验证token的
-app.use(
-	expressJwt({
-		secret: config.secret
-	}).unless({
-		path: ["/api/user/login", "/api/user/add", "/api/user/upload"] //设置白名单
-	})
-)
-
-// 中间件，处理jwt错误
-app.use(function(err, req, res, next) {
-	if (err.name === "UnauthorizedError") {
-		//  这个需要根据自己的业务逻辑来处理
-		return res.status(401).json({
-			success: false,
-			message: "invalid token..."
+/**
+ * 认证方式 jwt/session
+ */
+if (config.authentication === "jwt") {
+	/**
+	 * express-jwt是用来验证token的
+	 */
+	app.use(
+		expressJwt({
+			secret: config.secret
+		}).unless({
+			path: ["/api/user/login", "/api/user/add", "/api/user/upload"] //设置白名单
 		})
-	}
-})
+	)
+	// 中间件，使用jwt验证时，处理jwt错误
+	app.use(function(err, req, res, next) {
+		if (err.name === "UnauthorizedError") {
+			//  这个需要根据自己的业务逻辑来处理
+			return res.status(401).json({
+				success: false,
+				message: "invalid token..."
+			})
+		}
+	})
+} else {
+	/**
+	 * express-session 使用session验证
+	 */
+	app.use(
+		session({
+			secret: config.secret,
+			name: "sessionid",
+			cookie: { maxAge: 1000 * 60 * 3 },
+			resave: true,
+			saveUninitialized: false
+		})
+	)
+}
 
 app.use("/api", routes)
 

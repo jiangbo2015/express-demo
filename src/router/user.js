@@ -70,29 +70,45 @@ router.post("/login", (req, res) => {
 					message: "用户名或密码错误"
 				})
 			}
-			const token = jwt.sign(
-				{
-					username: name
-				},
-				config.secret,
-				{
-					expiresIn: 60
-				}
-			)
-			return res.json({
-				success: true,
-				message: "请使用您的授权码",
-				data: token
-			})
+			if (config.authentication === "jwt") {
+				const token = jwt.sign(
+					{
+						username: name
+					},
+					config.secret,
+					{
+						expiresIn: 60
+					}
+				)
+				return res.json({
+					success: true,
+					message: "请使用您的授权码",
+					data: token
+				})
+			} else {
+				req.session.userName = name
+				return res.json({
+					success: true,
+					message: "登陆成功",
+					data: user
+				})
+			}
 		}
 	)
 })
 
-router.get("/valid", (req, res) => {
-	res.json({
-		success: true,
-		message: "操纵成功"
-	})
+router.get("/test-session", (req, res) => {
+	if (req.session && req.session.userName) {
+		return res.json({
+			success: true,
+			message: "操纵成功"
+		})
+	} else {
+		return res.json({
+			success: false,
+			message: "session过期"
+		})
+	}
 })
 
 router.post("/upload", upload.single("file"), (req, res) => {
